@@ -4,6 +4,9 @@ struct Tournament {
     location: Location,
     start_date: Date,
     end_date: Date,
+    status: TournamentStatus,
+    config: TournamentConfig,
+
 }
 
 struct Location {
@@ -16,4 +19,20 @@ struct Location {
     street_number: u16,
     street_name: String,
     place: String,
+}
+
+struct TournamentStatus{
+
+}
+
+struct TournamentConfig {
+    number_of_rounds: u8, //no need more
+    pairing_system: PairingSystem,
+    scoring: ScoringSystem,
+    tie_break: Vec<TieBreak>
+
+    rating:RatingConfig,
+    bye_policy: ByePolicy,
+    time_control: TimeControl,
+    acceleration: Option<AccelerationSystem>
 }
