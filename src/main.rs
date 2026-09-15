@@ -1,3 +1,9 @@
+mod model;
+mod database;
+mod app;
+mod ui;
+mod common;
+
 use eframe::egui;
 #[derive(Default)]
 struct App {}
