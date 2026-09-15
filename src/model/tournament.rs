@@ -21,15 +21,20 @@ struct Location {
     place: String,
 }
 
-struct TournamentStatus{
-
+enum TournamentStatus{
+    //FSM
+    Draft,
+    Ready,
+    InProgress,
+    Finished,
+    Archived,
 }
 
 struct TournamentConfig {
     number_of_rounds: u8, //no need more
     pairing_system: PairingSystem,
     scoring: ScoringSystem,
-    tie_break: Vec<TieBreak>
+    tie_break: Vec<TieBreak>,
 
     rating:RatingConfig,
     bye_policy: ByePolicy,
