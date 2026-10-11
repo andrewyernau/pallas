@@ -1,30 +1,55 @@
-struct Round {
+use crate::model::participants::ParticipantId;
+
+pub type RoundNumber = u8;
+pub type BoardNumber = u16;
+
+pub struct Round {
     number: RoundNumber,
     status: RoundStatus,
 
     pairings: Vec<Pairing>, // Here we will allocate all player pairings i-j per round
-    bye: Option<ByeAssignment>,
+    // Vec, not Option: at most one pairing-allocated bye, but several players can request a bye
+    byes: Vec<ByeAssignment>,
+}
+
+/// Pending -> Paired (draft, arbiter reviews) -> Published (locked) -> InProgress -> Completed
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum RoundStatus {
+    Pending,
+    Paired,
+    Published,
+    InProgress,
+    Completed,
 }
 
 /// Here we place the parings -> once the specific pairing is finished
 /// we can add the result value
 /// F.e: Board 10
 /// player A vs player B
-/// both arrive so there is no bye
-/// wins white (player A) -> game result 1-0 in the standard system (-> WhiteWin/Draw/BlackWin -> so
-/// we can avoid overengineering for a result system)
-struct Pairing {
+/// wins white (player A) -> GameResult::Played(WhiteWin)
+/// How many points that is (1-0, 2-0...) is decided by the ScoringSystem, not stored here.
+///
+/// A pairing always has two players. An odd player out is not a pairing, it is a bye.
+pub struct Pairing {
     board: BoardNumber,
 
-    // TODO: handle uneven pairings, might have no ID in a specific pairing
     white: ParticipantId,
     black: ParticipantId,
 
-    result: Option<GameResult>,
+    result: Option<GameResult>, // None = not finished yet
 }
 
-enum GameResult {
-    Played(PlayedResult),
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GameOutcome {
+    WhiteWin,
+    Draw,
+    BlackWin,
+}
+
+/// Forfeits give points but don't count for rating nor as a played game
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum GameResult {
+    Played(GameOutcome),
 
     WhiteForfeitWin,
     BlackForfeitWin,
@@ -32,8 +57,15 @@ enum GameResult {
     DoubleForfeit,
 }
 
-struct ByeAssignment {
+/// No opponent, no colour, no rating. Its points come from ByePolicy (derived, not stored)
+pub struct ByeAssignment {
     participant: ParticipantId,
     kind: ByeKind,
-    points: TournamentPoints,
+}
+
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum ByeKind {
+    PairingAllocated, // odd number of players, usually worth a win
+    HalfPoint,        // requested by the player
+    ZeroPoint,        // requested by the player / absent
 }
