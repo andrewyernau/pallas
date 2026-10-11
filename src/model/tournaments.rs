@@ -21,8 +21,13 @@ struct Location {
     place: String,
 }
 
+/// FSM:
+/// Draft = Add elements, modifiable -> Ready
+/// Ready = Validate data. Once Okay -> InProgress,
+/// InProgress = From round 1 to round N -> InProgress || Finished
+/// Finished = Completed last round -> outputs all data, Elo, winner... -> Archived
+/// Archived = Don't show the game. Only reachable through specific consults
 enum TournamentStatus{
-    //FSM
     Draft,
     Ready,
     InProgress,
