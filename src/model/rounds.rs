@@ -57,7 +57,7 @@ pub enum GameResult {
     DoubleForfeit,
 }
 
-/// No opponent, no colour, no rating. Its points come from ByePolicy (derived, not stored)
+/// No opponent, no color, no rating. Its points come from ByePolicy (derived, not stored)
 pub struct ByeAssignment {
     participant: ParticipantId,
     kind: ByeKind,
